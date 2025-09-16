@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>소희의 취미 페이지</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .hero {
+      min-height: 40vh;
+      display:grid;place-items:center;
+      background:url("image/unsplash.jpg") center/cover no-repeat;
+      position:relative;color:#fff;
+    }
+    .hero::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.4);}
+    .hero .inner{position:relative;z-index:1;}
+    .avatar{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #fff;}
+    .fixed-back{position:fixed;left:16px;bottom:16px;z-index:1030;}
+  </style>
+</head>
+<body>
+<a href="index.html" class="btn btn-outline-secondary fixed-back">← 메인</a>
+
+<!-- nav bar -->
+<div id="navbar-placeholder"></div>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="inner text-center">
+    <img src="https://picsum.photos/300?random=5" alt="프로필" class="avatar mb-3">
+    <h1 class="fw-bold">Sohee</h1>
+    <p class="lead mb-0">One good thing about music, when it hits you, you feel no pain.</p>
+  </div>
+</header>
+
+<section class="py-5">
+  <div class="container">
+    <h2 class="h4 fw-bold mb-3">About</h2>
+    <p>
+        음악을 기록하고, 또 누군가와 나누기 위한 작은 공간입니다.<br>
+        언젠가 이곳에 다른 사람들의 플레이리스트도 담겨, 서로의 음악 취향이 이어지길 바랍니다.
+    </p>
+  </div>
+</section>
+
+<!-- 🎵 음악 비주얼라이저 -->
+<section class="py-5 bg-body-secondary">
+  <div class="container text-center">
+    <h2 class="h4 fw-bold mb-3">🎵 음악 비주얼라이저</h2>
+
+    <canvas id="visualizer" width="600" height="200" class="w-100 mb-3"></canvas>
+
+    <div class="d-flex justify-content-center gap-2 mb-3">
+      <button id="prevBtn" class="btn btn-secondary btn-sm">이전</button>
+      <button id="playBtn" class="btn btn-success btn-sm">재생</button>
+      <button id="pauseBtn" class="btn btn-warning btn-sm">일시정지</button>
+      <button id="restartBtn" class="btn btn-primary btn-sm">다시듣기</button>
+      <button id="nextBtn" class="btn btn-secondary btn-sm">다음</button>
+      <button id="shuffleBtn" class="btn btn-dark btn-sm">셔플 OFF</button>
+    </div>
+
+    <p id="nowPlaying" class="fw-semibold"></p>
+    <audio id="audio" crossorigin="anonymous"></audio>
+  </div>
+</section>
+
+<!-- === Interests  === -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="h4 fw-bold mb-4">Interests (취미 태그)</h2>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6 class="fw-semibold mb-3">내 태그</h6>
+        <div class="d-flex flex-wrap gap-2 my-tags">
+          <span class="badge rounded-pill text-bg-primary">#자바</span>
+          <span class="badge rounded-pill text-bg-primary">#부트스트랩</span>
+          <span class="badge rounded-pill text-bg-primary">#등산</span>
+          <span class="badge rounded-pill text-bg-primary">#사진</span>
+          <span class="badge rounded-pill text-bg-primary">#카페</span>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="small text-body-secondary mb-2">개발</div>
+            <div class="d-flex flex-wrap gap-2">
+              <span class="badge rounded-pill text-bg-secondary">#Spring</span>
+              <span class="badge rounded-pill text-bg-secondary">#Git</span>
+              <span class="badge rounded-pill text-bg-secondary">#DB</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="small text-body-secondary mb-2">라이프</div>
+            <div class="d-flex flex-wrap gap-2">
+              <span class="badge rounded-pill text-bg-secondary">#러닝</span>
+              <span class="badge rounded-pill text-bg-secondary">#헬스</span>
+              <span class="badge rounded-pill text-bg-secondary">#음악</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="py-4 bg-body-tertiary text-center small text-body-secondary">
+  © <span id="year"></span> 나의 추억 페이지
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // 연도 표기
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // navbar.html 불러오기
+  fetch("navBar.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("navbar-placeholder").innerHTML = data;
+    });
+
+  // 🎵 음악 로직
+  const songs = [
+    { title: "31km", src: "music/31km.mp3" },
+    { title: "109", src: "music/109.mp3" },
+    { title: "airplay", src: "music/airplay.mp3" },
+    { title: "Always", src: "music/Always.mp3" },
+    { title: "BUSSTOP", src: "music/BUSSTOP.mp3" },
+    { title: "Can_I_Love", src: "music/Can_I_Love.mp3" },
+    { title: "Can't_Stop_Loving_You", src: "music/Can't_Stop_Loving_You.mp3" },
+    { title: "Charcoal_Just_for_you", src: "music/Charcoal_Just_for_you.mp3" },
+    { title: "CherryBerry", src: "music/CherryBerry.mp3" },
+    { title: "chungchun", src: "music/chungchun.mp3" },
+    { title: "dogundogun", src: "music/dogundogun.mp3" },
+    { title: "Dream", src: "music/Dream.mp3" },
+    { title: "goodByestar", src: "music/goodByestar.mp3" },
+    { title: "HOLIDAY", src: "music/HOLIDAY.mp3" },
+    { title: "HONEY", src: "music/HONEY.mp3" },
+    { title: "How_I_Feel", src: "music/How_I_Feel.mp3" },
+    { title: "IKNOW", src: "music/IKNOW.mp3" },
+    { title: "Ipray", src: "music/Ipray.mp3" },
+    { title: "letsGoSeeStar", src: "music/letsGoSeeStar.mp3" },
+    { title: "likelastday", src: "music/likelastday.mp3" },
+    { title: "living", src: "music/living.mp3" },
+    { title: "missyounight", src: "music/missyounight.mp3" },
+    { title: "MoonMoon", src: "music/MoonMoon.mp3" },
+    { title: "morning", src: "music/morning.mp3" },
+    { title: "mrKim", src: "music/mrKim.mp3" },
+    { title: "mung", src: "music/mung.mp3" },
+    { title: "neednangman", src: "music/neednangman.mp3" },
+    { title: "NightOff_sleep", src: "music/NightOff_sleep.mp3" },
+    { title: "onlyIKnow", src: "music/onlyIKnow.mp3" },
+    { title: "passible", src: "music/passible.mp3" },
+    { title: "PerhapsLove", src: "music/PerhapsLove.mp3" },
+    { title: "pullpush", src: "music/pullpush.mp3" },
+    { title: "RIDE", src: "music/RIDE.mp3" },
+    { title: "SAGA", src: "music/SAGA.mp3" },
+    { title: "sal", src: "music/sal.mp3" },
+    { title: "someDay", src: "music/someDay.mp3" },
+    { title: "starOne", src: "music/starOne.mp3" },
+    { title: "Stars", src: "music/Stars.mp3" },
+    { title: "sweety", src: "music/sweety.mp3" }
+  ];
+
+  let currentIndex = 0;
+  let isShuffle = false;
+
+  const audio = document.getElementById("audio");
+  const playBtn = document.getElementById("playBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+  const restartBtn = document.getElementById("restartBtn");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const shuffleBtn = document.getElementById("shuffleBtn");
+  const nowPlaying = document.getElementById("nowPlaying");
+
+  const canvas = document.getElementById("visualizer");
+  const ctx = canvas.getContext("2d");
+
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const analyser = audioCtx.createAnalyser();
+  const source = audioCtx.createMediaElementSource(audio);
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
+
+  analyser.fftSize = 256;
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+
+  function loadSong(index) {
+    audio.src = songs[index].src;
+    nowPlaying.textContent = "지금 재생 중: " + songs[index].title;
+  }
+
+  function getRandomIndex() {
+    let randomIndex;
+    do {
+      randomIndex = Math.floor(Math.random() * songs.length);
+    } while (randomIndex === currentIndex);
+    return randomIndex;
+  }
+
+  playBtn.addEventListener("click", async () => {
+    try {
+      await audioCtx.resume();
+      await audio.play();
+    } catch (err) {
+      console.error("재생 실패:", err);
+    }
+  });
+
+  pauseBtn.addEventListener("click", () => audio.pause());
+
+  restartBtn.addEventListener("click", async () => {
+    audio.pause();
+    audio.currentTime = 0;
+    await audio.play();
+  });
+
+  prevBtn.addEventListener("click", () => {
+    currentIndex = isShuffle ? getRandomIndex() : (currentIndex - 1 + songs.length) % songs.length;
+    loadSong(currentIndex);
+    audio.play();
+  });
+
+  nextBtn.addEventListener("click", () => {
+    currentIndex = isShuffle ? getRandomIndex() : (currentIndex + 1) % songs.length;
+    loadSong(currentIndex);
+    audio.play();
+  });
+
+  shuffleBtn.addEventListener("click", () => {
+    isShuffle = !isShuffle;
+    shuffleBtn.classList.toggle("btn-info");
+    shuffleBtn.textContent = isShuffle ? "셔플 ON" : "셔플 OFF";
+  });
+
+  // 이퀄라이저
+  function draw() {
+    const bgImage = new Image();
+    bgImage.src = "image/unsplash.jpg";  // 🎨 배경 이미지 경로 
+
+  requestAnimationFrame(draw);
+  analyser.getByteFrequencyData(dataArray);
+
+  // 1. 배경 이미지 먼저 그리기
+  if (bgImage.complete) { // 이미지 로드 완료됐을 때만
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+  } else {
+    ctx.fillStyle = "#111"; // 이미지 로딩 중일 때 기본 배경색
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  // 2. 막대 그리기 (투명도 / 네온 효과 가능)
+  const barWidth = (canvas.width / bufferLength) * 2.5;
+  let x = 0;
+
+  for (let i = 0; i < bufferLength; i++) {
+    const barHeight = dataArray[i];
+    ctx.fillStyle = `rgba(${barHeight + 100},50,150,0.7)`; // 🔆 투명도 추가
+    ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
+
+    x += barWidth + 1;
+  }
+}
+draw();
+
+  // 첫 곡 로드
+  loadSong(currentIndex);
+</script>
+</body>
+</html>

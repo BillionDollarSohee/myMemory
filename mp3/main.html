@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>나의 취미 & 추억 – 원페이지</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- fullPage.js CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullpage.js/dist/fullpage.min.css">
+
+  <!-- Font Awesome (SNS 아이콘용) -->
+  <!-- Font Awesome 6 (최신) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+  <style>
+    .hero {
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at top, rgba(111, 66, 193, .15), transparent 60%),
+        radial-gradient(ellipse at bottom, rgba(13, 110, 253, .15), transparent 60%),
+        url("https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1600&auto=format&fit=crop") center/cover no-repeat;
+      color: #fff;
+      position: relative;
+    }
+
+    .hero>.content {
+      position: relative;
+      z-index: 1;
+      
+    }
+
+    .section-title {
+      letter-spacing: .02em;
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .fixed-cta {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 1030;
+    }
+
+    /* 🌟 3D 플립 카드 */
+    .memory-card {
+      cursor: pointer;
+      width: 100%;
+      aspect-ratio: 3/4;
+      position: relative;
+      perspective: 1000px;
+    }
+
+    .front,
+    .back {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      backface-visibility: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: transform .6s linear;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+    }
+
+    .front {
+      transform: rotateY(0deg);
+      position: relative;
+    }
+
+    /* 🏷️ 이름 오버레이 */
+    .name-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+      color: #fff;
+      padding: 0.5rem 0.8rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 0 0 12px 12px;
+      text-align: center;
+    }
+
+    .back {
+      background: #f1f1f1;
+      color: #2c3e50;
+      transform: rotateY(180deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.2rem;
+    }
+
+    .back-content h5 {
+      font-size: 1.2rem;
+      margin-bottom: .3rem;
+    }
+
+    .back-content p {
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .sm a {
+      display: inline-flex;
+      width: 50px;
+      height: 50px;
+      justify-content: center;
+      align-items: center;
+      color: #2c3e50;
+      font-size: 30px;
+      transition: 0.4s;
+      border-radius: 50%;
+      margin: 0 4px;
+      text-decoration: none;
+    }
+
+    .sm a:hover {
+      background: #2c3e50;
+      color: white;
+    }
+
+    .memory-card:hover>.front {
+      transform: rotateY(-180deg);
+    }
+
+    .memory-card:hover>.back {
+      transform: rotateY(0deg);
+    }
+
+    /* 📐 5개 고정 그리드 */
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.5rem;
+      justify-items: center;
+    }
+
+    @media (max-width: 992px) {
+      .memory-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 576px) {
+      .memory-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#top">My Memory</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+        aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#about">Guestbook</a></li>
+          <li class="nav-item"><a class="nav-link" href="#hobbies">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="#memories">Music</a></li>
+          <li class="nav-item"><a class="nav-link" href="#media">Drawing</a></li>
+          <li class="nav-item"><a class="nav-link" href="#guestbook">CAFE Map</a></li>
+        </ul>
+        <div class="d-flex gap-2 align-items-center">
+          <button id="themeToggle" class="btn btn-outline-secondary btn-sm" type="button"
+            title="라이트/다크 전환">🌓</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- fullpage wrapper -->
+  <div id="fullpage">
+
+    <!-- Hero -->
+    <div class="section hero">
+      <div class="content text-center container">
+        <h1 class="display-5 fw-bold">2팀</h1>
+        <p class="lead mb-4">사진 몇 장, 한 곡의 음악, 그리고 짧은 이야기로 기록하는 나만의 페이지.</p>
+        <a href="#" onclick="fullpage_api.moveTo(2); return false;" class="btn btn-light btn-lg">시작하기</a>
+      </div>
+    </div>
+
+    <!-- Memories -->
+    <div class="section">
+      <section id="memories" class="py-5">
+        <div class="container">
+          <h2 class="section-title">Hobby</h2>
+
+          <div class="memory-grid">
+            <!-- 카드 1 -->
+            <div class="memory-card" data-bs-toggle="modal" data-bs-target="#memoryModal"
+              data-title="희민의 봄 소풍" data-img="https://picsum.photos/1200/800?random=1">
+              <div class="front">
+                <img src="https://picsum.photos/800/600?random=1" alt="봄 소풍">
+                <div class="name-overlay">김가연</div>
+              </div>
+              <div class="back">
+                <div class="back-content">
+                  <h5>봄 소풍</h5>
+                  <p>따뜻한 햇살 아래 피크닉, 잔디와 샌드위치.</p>
+                  <div class="sm"><a href="#"><i class="fab fa-instagram"></i></a></div>
+                </div>
+              </div>
+            </div>
+            <!-- 카드 2 -->
+            <div class="memory-card" data-bs-toggle="modal" data-bs-target="#memoryModal"
+              data-title="지현의 첫 카페" data-img="https://picsum.photos/1200/800?random=2">
+              <div class="front">
+                <img src="https://picsum.photos/800/600?random=2" alt="첫 카페">
+                <div class="name-overlay">김소희</div>
+              </div>
+              <div class="back">
+                <div class="back-content">
+                  <h5>첫 카페</h5>
+                  <p>동네에서 찾은 숨은 보석 같은 카페.</p>
+                  <div class="sm"><a href="#"><i class="fab fa-instagram"></i></a></div>
+                </div>
+              </div>
+            </div>
+            <!-- 카드 3 -->
+            <div class="memory-card" data-bs-toggle="modal" data-bs-target="#memoryModal"
+              data-title="수빈의 우중 산책" data-img="https://picsum.photos/1200/800?random=3">
+              <div class="front">
+                <img src="https://picsum.photos/800/600?random=3" alt="우중 산책">
+                <div class="name-overlay">서희정</div>
+              </div>
+              <div class="back">
+                <div class="back-content">
+                  <h5>베이킹</h5>
+                  <p>밥보다 빵이 좋아 인간</p>
+                  <div class="sm"><a href="#"><i class="fas fa-regular fa-bread-slice"></i></a></div>
+                </div>
+              </div>
+            </div>
+            <!-- 카드 4 -->
+            <div class="memory-card" data-bs-toggle="modal" data-bs-target="#memoryModal"
+              data-title="정우의 겨울 산행" data-img="https://picsum.photos/1200/800?random=4">
+              <div class="front">
+                <img src="https://picsum.photos/800/600?random=4" alt="겨울 산행">
+                <div class="name-overlay">이재건</div>
+              </div>
+              <div class="back">
+                <div class="back-content">
+                  <h5>겨울 산행</h5>
+                  <p>눈 덮인 산길을 함께 오른 하루.</p>
+                  <div class="sm"><a href="#"><i class="fab fa-instagram"></i></a></div>
+                </div>
+              </div>
+            </div>
+            <!-- 카드 5 -->
+            <div class="memory-card" data-bs-toggle="modal" data-bs-target="#memoryModal"
+              data-title="소연의 여름 바다" data-img="https://picsum.photos/1200/800?random=5">
+              <div class="front">
+                <img src="https://picsum.photos/800/600?random=5" alt="여름 바다">
+                <div class="name-overlay">정현목</div>
+              </div>
+              <div class="back">
+                <div class="back-content">
+                  <h5>여름 바다</h5>
+                  <p>시원한 파도소리와 모래 위의 발자국.</p>
+                  <div class="sm"><a href="#"><i class="fab fa-instagram"></i></a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 기존 모달 유지 -->
+          <div class="modal fade" id="memoryModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+              <div class="modal-content">
+                <img id="modalImg" alt="확대 이미지" class="w-100 rounded-top">
+                <div class="modal-body">
+                  <h5 id="modalTitle" class="mb-0">제목</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Quick CTA -->
+  <a class="btn btn-primary rounded-pill shadow fixed-cta" href="#" onclick="fullpage_api.moveTo(2); return false;">
+    📸 사진 보기
+  </a>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- fullPage.js JS -->
+  <script src="https://cdn.jsdelivr.net/npm/fullpage.js/dist/fullpage.min.js"></script>
+
+  <script>
+    new fullpage('#fullpage', {
+      autoScrolling: true,
+      navigation: true
+    });
+
+    const themeToggle = document.getElementById('themeToggle');
+    const docEl = document.documentElement;
+    const THEME_KEY = 'onepage-theme';
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if (savedTheme) docEl.setAttribute('data-bs-theme', savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+      const cur = docEl.getAttribute('data-bs-theme') || 'light';
+      const next = cur === 'light' ? 'dark' : 'light';
+      docEl.setAttribute('data-bs-theme', next);
+      localStorage.setItem(THEME_KEY, next);
+    });
+
+    const memoryModal = document.getElementById('memoryModal');
+    if (memoryModal) {
+      memoryModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const title = button?.getAttribute('data-title') || '추억';
+        const imgUrl = button?.getAttribute('data-img');
+        document.getElementById('modalTitle').textContent = title;
+        const modalImg = document.getElementById('modalImg');
+        modalImg.src = imgUrl;
+        modalImg.alt = title;
+      });
+    }
+  </script>
+</body>
+
+</html>
