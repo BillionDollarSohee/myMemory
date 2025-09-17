@@ -57,10 +57,26 @@ const songs = [
 ];
 
 // ====================== 상태 변수 ======================
-let currentIndex = 0;
-let isPlaying = false;
+const bgImages = [
+  "image/cassette.jpg",
+  "image/dodiunsplash.jpg",
+  "image/pexels-pixabay-164853.jpg",
+  "image/pexelsaaronsvd12544.jpg",
+  "image/pexelspixabay164967.jpg",
+  "image/pixabay159613.jpg",
+  "image/unsplash.jpg"
+];
+
+let currentIndex = 0;   // 초기 인덱스
+let isPlaying = false;  // 재생 상태
 let isShuffle = false;
 let isRepeat = false;
+
+let currentImage = null;
+let targetImage = null;
+let fadeAlpha = 0;
+let barColor = "#ff4081"; // 기본 바 색상
+let fadeSpeed = 0.05;       // 크로스페이드 속도 (0.01 ~ 0.1 사이 추천)
 
 // ====================== DOM 요소 ======================
 const audio = document.getElementById("audio");
@@ -90,29 +106,54 @@ analyser.fftSize = 256;
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
+// ====================== 이미지 평균 색상 추출 ======================
+function getAverageColor(img) {
+  const tempCanvas = document.createElement("canvas");
+  const tempCtx = tempCanvas.getContext("2d");
+  tempCanvas.width = 10;
+  tempCanvas.height = 10;
 
-// 배경 이미지 준비
-const bgImage = new Image();
-const bgImages = [
-  "image/cassette.jpg",
-  "image/dodiunsplash.jpg",
-  "image/pexels-pixabay-164853.jpg",
-  "image/pexelsaaronsvd12544.jpg",
-  "image/pexelspixabay164967.jpg",
-  "image/pixabay159613.jpg",
-  "image/unsplash.jpg"
-];
-let bgIndex = 0;
+  tempCtx.drawImage(img, 0, 0, 10, 10);
+  const data = tempCtx.getImageData(0, 0, 10, 10).data;
+
+  let r = 0, g = 0, b = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    r += data[i];
+    g += data[i + 1];
+    b += data[i + 2];
+  }
+  const count = data.length / 4;
+  return `rgba(${Math.floor(r / count)},${Math.floor(g / count)},${Math.floor(b / count)},0.7)`;
+}
 
 // ====================== 함수 ======================
 // 곡 로드
 function loadSong(index) {
   audio.src = songs[index].src;
   nowPlaying.textContent = "지금 재생 중인 곡 : " + songs[index].title;
-  
-  // 🎨 배경 이미지 변경 (곡마다 순차적으로)
-  bgIndex = index % bgImages.length;
-  bgImage.src = bgImages[bgIndex];
+
+  // 🎨 배경 이미지 로드
+  const bgIndex = index % bgImages.length;
+  const img = new Image();
+  img.src = bgImages[bgIndex];
+  img.onload = () => {
+    targetImage = img;
+    fadeAlpha = 0;
+    if (!currentImage) {
+      // 첫 로드시 바로 적용
+      currentImage = img;
+      barColor = getAverageColor(img);
+    }
+  };
+}
+
+// 아이콘 전환
+function setPlayIcon(playing) {
+  if (playing) {
+    playIcon.textContent = "pause"; // ⏸
+  } else {
+    playIcon.textContent = "play_arrow"; // ▶
+  }
 }
 
 // 아이콘 전환
@@ -279,44 +320,44 @@ function draw() {
   requestAnimationFrame(draw);
   analyser.getByteFrequencyData(dataArray);
 
-  // 배경 이미지 로드 완료 시만 그리기
-  if (bgImage.complete) {
-    // 비율 유지하면서 캔버스에 꽉 차게
-    const aspectRatio = bgImage.width / bgImage.height;
-    const canvasRatio = canvas.width / canvas.height;
-
-    let drawWidth, drawHeight, offsetX, offsetY;
-
-    if (aspectRatio > canvasRatio) {
-      // 이미지가 더 넓음 → 높이에 맞추고 좌우 잘림
-      drawHeight = canvas.height;
-      drawWidth = bgImage.width * (canvas.height / bgImage.height);
-      offsetX = (canvas.width - drawWidth) / 2;
-      offsetY = 0;
-    } else {
-      // 이미지가 더 높음 → 너비에 맞추고 상하 잘림
-      drawWidth = canvas.width;
-      drawHeight = bgImage.height * (canvas.width / bgImage.width);
-      offsetX = 0;
-      offsetY = (canvas.height - drawHeight) / 2;
-    }
-
-    ctx.drawImage(bgImage, offsetX, offsetY, drawWidth, drawHeight);
+  // 현재 배경 그리기
+  if (currentImage) {
+    ctx.globalAlpha = 1;
+    ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
   } else {
     ctx.fillStyle = "#111";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  // 바(Visualizer)
-  const barWidth = (canvas.width / bufferLength) * 2.5;
-  let x = 0;
-
-  for (let i = 0; i < bufferLength; i++) {
-    const barHeight = dataArray[i];
-    ctx.fillStyle = `rgba(${barHeight + 100},50,150,0.7)`;
-    ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
-    x += barWidth + 1;
+  // 페이드 효과
+  if (targetImage) {
+    fadeAlpha += 0.02;
+    if (fadeAlpha >= 1) {
+      fadeAlpha = 1;
+      currentImage = targetImage;
+      targetImage = null;
+      barColor = getAverageColor(currentImage); 
+    }
+    ctx.globalAlpha = fadeAlpha;
+    ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1;
   }
+
+    // EQ 막대
+    const barWidth = (canvas.width / bufferLength) * 1.5;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+    const barHeight = dataArray[i];
+    ctx.fillStyle = barColor;
+    ctx.fillRect(
+        x,
+        canvas.height - barHeight / 2, // 아래에서부터 그리기
+        barWidth,
+        barHeight / 2
+    );
+    x += barWidth + 1; // 막대 사이 여백
+    }
 }
 
 // ====================== 초기화 ======================
