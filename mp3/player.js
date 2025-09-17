@@ -118,25 +118,23 @@ analyser.fftSize = 256;
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
-// ====================== 이미지 평균 색상 추출 ======================
-function getAverageColor(img) {
-  const tempCanvas = document.createElement("canvas");
-  const tempCtx = tempCanvas.getContext("2d");
-  tempCanvas.width = 10;
-  tempCanvas.height = 10;
-
-  tempCtx.drawImage(img, 0, 0, 10, 10);
-  const data = tempCtx.getImageData(0, 0, 10, 10).data;
-
-  let r = 0, g = 0, b = 0;
-  for (let i = 0; i < data.length; i += 4) {
-    r += data[i];
-    g += data[i + 1];
-    b += data[i + 2];
-  }
-  const count = data.length / 4;
-  return `rgba(${Math.floor(r / count)},${Math.floor(g / count)},${Math.floor(b / count)},0.7)`;
+// ====================== 보조 함수 ======================
+function hexToRgb(hex) {
+  hex = hex.replace("#", "");
+  const bigint = parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return [r, g, b];
 }
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+// ====================== 상태 변수 보강 ======================
+let prevBarColor = barColor;
+let targetBarColor = barColor;
 
 // ====================== 함수 ======================
 // 곡 로드
@@ -151,10 +149,16 @@ function loadSong(index) {
   img.onload = () => {
     targetImage = img;
     fadeAlpha = 0;
+
+    // 새로운 색상 목표값 설정
+    const imgSrc = bgImages[currentBgIndex].split("?")[0];
+    prevBarColor = barColor;
+    targetBarColor = imageColors[imgSrc] || "#91919180";
+
     if (!currentImage) {
       currentImage = img;
-      // 평균 색상 쓰던 부분을 제거하고, 매핑된 색상으로 교체 가능
-      barColor = imageColors[img.src.split("?")[0]] || "#fff";
+      // 매핑된 색상으로 교체
+      barColor = targetBarColor;
     }
   };
 }
