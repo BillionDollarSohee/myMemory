@@ -1,5 +1,6 @@
+// ====================== 기본 세팅 ======================
 // 연도 표기
-document.getElementById('year').textContent = new Date().getFullYear();
+document.getElementById("year").textContent = new Date().getFullYear();
 
 // navbar.html 불러오기
 fetch("navBar.html")
@@ -8,107 +9,56 @@ fetch("navBar.html")
     document.getElementById("navbar-placeholder").innerHTML = data;
   });
 
-// 기본 내장된 곡 목록
-const songs = [ { title: "31km", src: "music/31km.mp3" },
-                { title: "109", src: "music/109.mp3" }, 
-                { title: "airplay", src: "music/airplay.mp3" }, 
-                { title: "Always", src: "music/Always.mp3" }, 
-                { title: "BUSSTOP", src: "music/BUSSTOP.mp3" }, 
-                { title: "Can_I_Love", src: "music/Can_I_Love.mp3" },
-                { title: "Can't_Stop_Loving_You", src: "music/Can't_Stop_Loving_You.mp3" },
-                { title: "Charcoal_Just_for_you", src: "music/Charcoal_Just_for_you.mp3" },
-                { title: "CherryBerry", src: "music/CherryBerry.mp3" }, 
-                { title: "chungchun", src: "music/chungchun.mp3" },
-                { title: "dogundogun", src: "music/dogundogun.mp3" }, 
-                { title: "Dream", src: "music/Dream.mp3" }, 
-                { title: "goodByestar", src: "music/goodByestar.mp3" }, 
-                { title: "HOLIDAY", src: "music/HOLIDAY.mp3" }, 
-                { title: "HONEY", src: "music/HONEY.mp3" }, 
-                { title: "How_I_Feel", src: "music/How_I_Feel.mp3" },
-                { title: "IKNOW", src: "music/IKNOW.mp3" },
-                { title: "Ipray", src: "music/Ipray.mp3" }, 
-                { title: "letsGoSeeStar", src: "music/letsGoSeeStar.mp3" },
-                { title: "likelastday", src: "music/likelastday.mp3" }, 
-                { title: "living", src: "music/living.mp3" }, 
-                { title: "missyounight", src: "music/missyounight.mp3" },
-                { title: "MoonMoon", src: "music/MoonMoon.mp3" }, 
-                { title: "morning", src: "music/morning.mp3" }, 
-                { title: "mrKim", src: "music/mrKim.mp3" }, 
-                { title: "mung", src: "music/mung.mp3" },
-                { title: "neednangman", src: "music/neednangman.mp3" }, 
-                { title: "NightOff_sleep", src: "music/NightOff_sleep.mp3" },
-                { title: "onlyIKnow", src: "music/onlyIKnow.mp3" }, 
-                { title: "passible", src: "music/passible.mp3" },
-                { title: "PerhapsLove", src: "music/PerhapsLove.mp3" }, 
-                { title: "pullpush", src: "music/pullpush.mp3" },
-                { title: "RIDE", src: "music/RIDE.mp3" }, 
-                { title: "SAGA", src: "music/SAGA.mp3" }, 
-                { title: "sal", src: "music/sal.mp3" },
-                { title: "someDay", src: "music/someDay.mp3" },
-                { title: "starOne", src: "music/starOne.mp3" },
-                { title: "Stars", src: "music/Stars.mp3" }, 
-                { title: "sweety", src: "music/sweety.mp3" } 
+// ====================== 곡 목록 ======================
+const songs = [
+  { title: "31km", src: "music/31km.mp3" },
+  { title: "109", src: "music/109.mp3" },
+  { title: "airplay", src: "music/airplay.mp3" },
+  { title: "Always", src: "music/Always.mp3" },
+  { title: "BUSSTOP", src: "music/BUSSTOP.mp3" },
+  { title: "Can_I_Love", src: "music/Can_I_Love.mp3" },
+  { title: "Can't_Stop_Loving_You", src: "music/Can't_Stop_Loving_You.mp3" },
+  { title: "Charcoal_Just_for_you", src: "music/Charcoal_Just_for_you.mp3" },
+  { title: "CherryBerry", src: "music/CherryBerry.mp3" },
+  { title: "chungchun", src: "music/chungchun.mp3" },
+  { title: "dogundogun", src: "music/dogundogun.mp3" },
+  { title: "Dream", src: "music/Dream.mp3" },
+  { title: "goodByestar", src: "music/goodByestar.mp3" },
+  { title: "HOLIDAY", src: "music/HOLIDAY.mp3" },
+  { title: "HONEY", src: "music/HONEY.mp3" },
+  { title: "How_I_Feel", src: "music/How_I_Feel.mp3" },
+  { title: "IKNOW", src: "music/IKNOW.mp3" },
+  { title: "Ipray", src: "music/Ipray.mp3" },
+  { title: "letsGoSeeStar", src: "music/letsGoSeeStar.mp3" },
+  { title: "likelastday", src: "music/likelastday.mp3" },
+  { title: "living", src: "music/living.mp3" },
+  { title: "missyounight", src: "music/missyounight.mp3" },
+  { title: "MoonMoon", src: "music/MoonMoon.mp3" },
+  { title: "morning", src: "music/morning.mp3" },
+  { title: "mrKim", src: "music/mrKim.mp3" },
+  { title: "mung", src: "music/mung.mp3" },
+  { title: "neednangman", src: "music/neednangman.mp3" },
+  { title: "NightOff_sleep", src: "music/NightOff_sleep.mp3" },
+  { title: "onlyIKnow", src: "music/onlyIKnow.mp3" },
+  { title: "passible", src: "music/passible.mp3" },
+  { title: "PerhapsLove", src: "music/PerhapsLove.mp3" },
+  { title: "pullpush", src: "music/pullpush.mp3" },
+  { title: "RIDE", src: "music/RIDE.mp3" },
+  { title: "SAGA", src: "music/SAGA.mp3" },
+  { title: "sal", src: "music/sal.mp3" },
+  { title: "someDay", src: "music/someDay.mp3" },
+  { title: "starOne", src: "music/starOne.mp3" },
+  { title: "Stars", src: "music/Stars.mp3" },
+  { title: "sweety", src: "music/sweety.mp3" }
 ];
 
-// 드래그 앤 드롭 이벤트
-const dropZone = document.getElementById("dropZone");
-
-dropZone.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  dropZone.classList.add("dragover");
-});
-
-dropZone.addEventListener("dragleave", () => {
-  dropZone.classList.remove("dragover");
-});
-
-dropZone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  dropZone.classList.remove("dragover");
-
-  const files = e.dataTransfer.files;
-  Array.from(files).forEach((file) => {
-    if (file.type === "audio/mp3" || file.name.endsWith(".mp3")) {
-      const url = URL.createObjectURL(file);
-      const title = file.name.replace(".mp3", "");
-
-      const newSong = { title, src: url };
-      songs.push(newSong);
-
-      // 내 리스트에 표시
-      const li = document.createElement("li");
-      li.className = "list-group-item d-flex justify-content-between align-items-center";
-      li.textContent = title;
-
-      const playBtn = document.createElement("button");
-      playBtn.textContent = "▶";
-      playBtn.className = "btn btn-sm btn-outline-primary";
-      playBtn.addEventListener("click", () => {
-        currentIndex = songs.indexOf(newSong);
-        loadSong(currentIndex);
-        audio.play();
-        isPlaying = true;
-        setPlayIcon(true);
-      });
-
-      li.appendChild(playBtn);
-      myPlaylist.appendChild(li);
-
-      // 드롭된 첫 곡은 자동 재생
-      currentIndex = songs.length - 1;
-      loadSong(currentIndex);
-      audio.play();
-      isPlaying = true;
-      setPlayIcon(true);
-    }
-  });
-});
-
-
-// 오디오 관련 변수
+// ====================== 상태 변수 ======================
 let currentIndex = 0;
 let isPlaying = false;
+let isShuffle = false;
+let isRepeat = false;
 
+// ====================== DOM 요소 ======================
 const audio = document.getElementById("audio");
 const nowPlaying = document.getElementById("nowPlaying");
 const playPauseBtn = document.getElementById("playPauseBtn");
@@ -116,8 +66,11 @@ const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const playIcon = document.getElementById("playIcon");
 const volumeControl = document.getElementById("volumeControl");
+const volumeValue = document.getElementById("volumeValue");
+const shuffleBtn = document.getElementById("shuffleBtn");
+const repeatBtn = document.getElementById("repeatBtn");
 
-// AudioContext + 비주얼라이저
+// ====================== 오디오 비주얼라이저 ======================
 const canvas = document.getElementById("visualizer");
 const ctx = canvas.getContext("2d");
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -130,22 +83,41 @@ analyser.fftSize = 256;
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
-// 아이콘 토글
-function setPlayIcon(playing) {
-  if (playing) {
-    playIcon.innerHTML = `<path d="M6 5h4v14H6zM14 5h4v14h-4z"></path>`; // ⏸
-  } else {
-    playIcon.innerHTML = `<path d="M8 5v14l11-7z"></path>`; // ▶
-  }
-}
-
+// ====================== 함수 ======================
 // 곡 로드
 function loadSong(index) {
   audio.src = songs[index].src;
   nowPlaying.textContent = "지금 재생 중인 곡 : " + songs[index].title;
 }
 
-// ▶ / ⏸ 버튼
+// 아이콘 전환
+function setPlayIcon(playing) {
+  if (playing) {
+    playIcon.textContent = "pause"; // ⏸
+  } else {
+    playIcon.textContent = "play_arrow"; // ▶
+  }
+}
+
+// 랜덤 인덱스
+function getRandomIndex() {
+  let randomIndex;
+  do {
+    randomIndex = Math.floor(Math.random() * songs.length);
+  } while (randomIndex === currentIndex);
+  return randomIndex;
+}
+
+// 볼륨 슬라이더 UI
+function updateVolumeSlider() {
+  const value = volumeControl.value;
+  const percent = (value - volumeControl.min) / (volumeControl.max - volumeControl.min) * 100;
+  volumeControl.style.background = `linear-gradient(to right, gold ${percent}%, #ccc ${percent}%)`;
+  volumeValue.textContent = Math.round(value * 100);
+}
+
+// ====================== 이벤트 리스너 ======================
+// ▶ / ⏸
 playPauseBtn.addEventListener("click", async () => {
   try {
     await audioCtx.resume();
@@ -180,32 +152,39 @@ nextBtn.addEventListener("click", () => {
   setPlayIcon(isPlaying);
 });
 
-// 곡이 끝났을 때 자동 다음곡
+// 🔀 셔플
+shuffleBtn.addEventListener("click", () => {
+  isShuffle = !isShuffle;
+  shuffleBtn.classList.toggle("active", isShuffle);
+});
+
+// 🔁 반복
+repeatBtn.addEventListener("click", () => {
+  isRepeat = !isRepeat;
+  repeatBtn.classList.toggle("active", isRepeat);
+});
+
+// 곡 종료 이벤트
 audio.addEventListener("ended", () => {
-  nextBtn.click();
+  if (isRepeat) {
+    audio.currentTime = 0;
+    audio.play();
+  } else if (isShuffle) {
+    currentIndex = getRandomIndex();
+    loadSong(currentIndex);
+    audio.play();
+  } else {
+    nextBtn.click();
+  }
 });
 
 // 🔊 볼륨 컨트롤
-function updateVolumeSlider() {
-  const value = volumeControl.value;
-  const percent = (value - volumeControl.min) / (volumeControl.max - volumeControl.min) * 100;
-  
-  // 채워지는 부분
-  volumeControl.style.background = `linear-gradient(to right, gold ${percent}%, #ccc ${percent}%)`;
-  
-  // 숫자 (0~100으로 변환)
-  volumeValue.textContent = Math.round(value * 100);
-}
-
 volumeControl.addEventListener("input", (e) => {
   audio.volume = e.target.value;
   updateVolumeSlider();
 });
 
-// 초기 실행
-updateVolumeSlider();
-
-// 비주얼라이저
+// ====================== 비주얼라이저 ======================
 function draw() {
   const bgImage = new Image();
   bgImage.src = "image/unsplash.jpg";
@@ -232,47 +211,6 @@ function draw() {
 }
 draw();
 
-// 첫 곡 로드
+// ====================== 초기화 ======================
 loadSong(currentIndex);
-
-// 새로운 노래 추가 기능
-const addSongForm = document.getElementById("addSongForm");
-const songTitleInput = document.getElementById("songTitle");
-const songSrcInput = document.getElementById("songSrc");
-const myPlaylist = document.getElementById("myPlaylist");
-
-// 새로운 곡 추가
-addSongForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const title = songTitleInput.value.trim();
-  const src = songSrcInput.value.trim();
-
-  if (title && src) {
-    // 곡 목록에 추가
-    songs.push({ title, src });
-
-    // 내 리스트에 표시
-    const li = document.createElement("li");
-    li.className = "list-group-item d-flex justify-content-between align-items-center";
-    li.textContent = title;
-
-    // ▶ 버튼 (해당 곡 재생)
-    const playBtn = document.createElement("button");
-    playBtn.textContent = "▶";
-    playBtn.className = "btn btn-sm btn-outline-primary";
-    playBtn.addEventListener("click", () => {
-      currentIndex = songs.length - 1; // 방금 추가된 곡 인덱스
-      loadSong(currentIndex);
-      audio.play();
-      isPlaying = true;
-      setPlayIcon(true);
-    });
-
-    li.appendChild(playBtn);
-    myPlaylist.appendChild(li);
-
-    // 입력 초기화
-    songTitleInput.value = "";
-    songSrcInput.value = "";
-  }
-});
+updateVolumeSlider();
