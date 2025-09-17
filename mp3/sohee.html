@@ -142,46 +142,20 @@
   </div>
 </section>
 
-<!-- === Interests  === -->
+<!-- My Playlist -->
 <section class="py-5">
   <div class="container">
-    <h2 class="h4 fw-bold mb-4">Interests (취미 태그)</h2>
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h6 class="fw-semibold mb-3">내 태그</h6>
-        <div class="d-flex flex-wrap gap-2 my-tags">
-          <span class="badge rounded-pill text-bg-primary">#자바</span>
-          <span class="badge rounded-pill text-bg-primary">#부트스트랩</span>
-          <span class="badge rounded-pill text-bg-primary">#등산</span>
-          <span class="badge rounded-pill text-bg-primary">#사진</span>
-          <span class="badge rounded-pill text-bg-primary">#카페</span>
-        </div>
+    <h2 class="h4 fw-bold mb-4">🎶 My Playlist</h2>
 
-        <hr class="my-4">
-
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="small text-body-secondary mb-2">개발</div>
-            <div class="d-flex flex-wrap gap-2">
-              <span class="badge rounded-pill text-bg-secondary">#Spring</span>
-              <span class="badge rounded-pill text-bg-secondary">#Git</span>
-              <span class="badge rounded-pill text-bg-secondary">#DB</span>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="small text-body-secondary mb-2">라이프</div>
-            <div class="d-flex flex-wrap gap-2">
-              <span class="badge rounded-pill text-bg-secondary">#러닝</span>
-              <span class="badge rounded-pill text-bg-secondary">#헬스</span>
-              <span class="badge rounded-pill text-bg-secondary">#음악</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- 새로운 곡 추가 (드래그 앤 드롭) -->
+    <div id="dropZone" class="p-5 border border-dashed text-center bg-body-tertiary">
+      🎵 여기에 음악 파일을 끌어다 놓으세요
     </div>
+    <ul id="myPlaylist" class="list-group mt-3"></ul>
   </div>
 </section>
 
+<!-- Footer -->
 <footer class="py-4 bg-body-tertiary text-center small text-body-secondary">
   © <span id="year"></span> 나의 추억 페이지
 </footer>

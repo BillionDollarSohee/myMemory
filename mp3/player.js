@@ -8,7 +8,7 @@ fetch("navBar.html")
     document.getElementById("navbar-placeholder").innerHTML = data;
   });
 
-// 곡 목록
+// 기본 내장된 곡 목록
 const songs = [ { title: "31km", src: "music/31km.mp3" },
                 { title: "109", src: "music/109.mp3" }, 
                 { title: "airplay", src: "music/airplay.mp3" }, 
@@ -49,6 +49,61 @@ const songs = [ { title: "31km", src: "music/31km.mp3" },
                 { title: "Stars", src: "music/Stars.mp3" }, 
                 { title: "sweety", src: "music/sweety.mp3" } 
 ];
+
+// 드래그 앤 드롭 이벤트
+const dropZone = document.getElementById("dropZone");
+
+dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropZone.classList.add("dragover");
+});
+
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("dragover");
+});
+
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+
+  const files = e.dataTransfer.files;
+  Array.from(files).forEach((file) => {
+    if (file.type === "audio/mp3" || file.name.endsWith(".mp3")) {
+      const url = URL.createObjectURL(file);
+      const title = file.name.replace(".mp3", "");
+
+      const newSong = { title, src: url };
+      songs.push(newSong);
+
+      // 내 리스트에 표시
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+      li.textContent = title;
+
+      const playBtn = document.createElement("button");
+      playBtn.textContent = "▶";
+      playBtn.className = "btn btn-sm btn-outline-primary";
+      playBtn.addEventListener("click", () => {
+        currentIndex = songs.indexOf(newSong);
+        loadSong(currentIndex);
+        audio.play();
+        isPlaying = true;
+        setPlayIcon(true);
+      });
+
+      li.appendChild(playBtn);
+      myPlaylist.appendChild(li);
+
+      // 드롭된 첫 곡은 자동 재생
+      currentIndex = songs.length - 1;
+      loadSong(currentIndex);
+      audio.play();
+      isPlaying = true;
+      setPlayIcon(true);
+    }
+  });
+});
+
 
 // 오디오 관련 변수
 let currentIndex = 0;
@@ -179,3 +234,45 @@ draw();
 
 // 첫 곡 로드
 loadSong(currentIndex);
+
+// 새로운 노래 추가 기능
+const addSongForm = document.getElementById("addSongForm");
+const songTitleInput = document.getElementById("songTitle");
+const songSrcInput = document.getElementById("songSrc");
+const myPlaylist = document.getElementById("myPlaylist");
+
+// 새로운 곡 추가
+addSongForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const title = songTitleInput.value.trim();
+  const src = songSrcInput.value.trim();
+
+  if (title && src) {
+    // 곡 목록에 추가
+    songs.push({ title, src });
+
+    // 내 리스트에 표시
+    const li = document.createElement("li");
+    li.className = "list-group-item d-flex justify-content-between align-items-center";
+    li.textContent = title;
+
+    // ▶ 버튼 (해당 곡 재생)
+    const playBtn = document.createElement("button");
+    playBtn.textContent = "▶";
+    playBtn.className = "btn btn-sm btn-outline-primary";
+    playBtn.addEventListener("click", () => {
+      currentIndex = songs.length - 1; // 방금 추가된 곡 인덱스
+      loadSong(currentIndex);
+      audio.play();
+      isPlaying = true;
+      setPlayIcon(true);
+    });
+
+    li.appendChild(playBtn);
+    myPlaylist.appendChild(li);
+
+    // 입력 초기화
+    songTitleInput.value = "";
+    songSrcInput.value = "";
+  }
+});
