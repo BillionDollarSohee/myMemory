@@ -75,8 +75,20 @@ let isRepeat = false;
 let currentImage = null;
 let targetImage = null;
 let fadeAlpha = 0;
-let barColor = "#ff4081"; // 기본 바 색상
 let fadeSpeed = 0.05;       // 크로스페이드 속도 (0.01 ~ 0.1 사이 추천)
+
+// ====================== 배경 이미지별 색상 매핑 ======================
+let currentBgIndex = 0; // 현재 배경 이미지 인덱스
+let barColor = "#ffffff7e"; // 기본 바 색상
+const imageColors = {
+  "image/cassette.jpg": "#ff578175",      
+  "image/dodiunsplash.jpg": "#9a32b465",  
+  "image/pexels-pixabay-164853.jpg": "#3f502d", 
+  "image/pexelsaaronsvd12544.jpg": "#b6b6b659",   
+  "image/pexelspixabay164967.jpg": "#dabf6883",   
+  "image/pixabay159613.jpg": "#40847273", 
+  "image/unsplash.jpg": "#ff408091"       
+};
 
 // ====================== DOM 요소 ======================
 const audio = document.getElementById("audio");
@@ -133,16 +145,16 @@ function loadSong(index) {
   nowPlaying.textContent = "지금 재생 중인 곡 : " + songs[index].title;
 
   // 🎨 배경 이미지 로드
-  const bgIndex = index % bgImages.length;
+  currentBgIndex = index % bgImages.length;  // 현재 배경 인덱스 저장
   const img = new Image();
-  img.src = bgImages[bgIndex];
+  img.src = bgImages[currentBgIndex];
   img.onload = () => {
     targetImage = img;
     fadeAlpha = 0;
     if (!currentImage) {
-      // 첫 로드시 바로 적용
       currentImage = img;
-      barColor = getAverageColor(img);
+      // 평균 색상 쓰던 부분을 제거하고, 매핑된 색상으로 교체 가능
+      barColor = imageColors[img.src.split("?")[0]] || "#fff";
     }
   };
 }
@@ -313,8 +325,6 @@ dropZone.addEventListener("drop", (e) => {
   });
 });
 
-
-
 // ====================== 비주얼라이저 ======================
 function draw() {
   requestAnimationFrame(draw);
@@ -329,34 +339,44 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  // 페이드 효과
-  if (targetImage) {
+    // 페이드 효과
+    if (targetImage) {
     fadeAlpha += 0.02;
     if (fadeAlpha >= 1) {
-      fadeAlpha = 1;
-      currentImage = targetImage;
-      targetImage = null;
-      barColor = getAverageColor(currentImage); 
+        fadeAlpha = 1;
+        currentImage = targetImage;
+        targetImage = null;
+
+        // ✅ 배경 이미지 경로 기준으로 색상 지정
+        const imgSrc = bgImages[currentBgIndex];
+        barColor = imageColors[imgSrc] || "#fff"; 
     }
     ctx.globalAlpha = fadeAlpha;
     ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = 1;
-  }
+    }
 
     // EQ 막대
     const barWidth = (canvas.width / bufferLength) * 1.5;
     let x = 0;
 
+    // 현재 배경 이미지 확인
+    let imgSrc = bgImages[currentBgIndex] || "";
+    // 혹시 전체 경로나 캐시 파라미터(#, ?)가 붙으면 파일명만 추출
+    imgSrc = imgSrc.split("?")[0]; 
+    // 매핑된 색상 (없으면 기본 흰색)
+    const currentBarColor = imageColors[imgSrc] || "#fff";
+
     for (let i = 0; i < bufferLength; i++) {
     const barHeight = dataArray[i];
-    ctx.fillStyle = barColor;
+    ctx.fillStyle = currentBarColor;
     ctx.fillRect(
         x,
-        canvas.height - barHeight / 2, // 아래에서부터 그리기
+        canvas.height - barHeight / 2,
         barWidth,
         barHeight / 2
     );
-    x += barWidth + 1; // 막대 사이 여백
+    x += barWidth + 1;
     }
 }
 
