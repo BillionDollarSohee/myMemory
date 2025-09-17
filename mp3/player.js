@@ -90,11 +90,29 @@ analyser.fftSize = 256;
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
+
+// 배경 이미지 준비
+const bgImage = new Image();
+const bgImages = [
+  "image/cassette.jpg",
+  "image/dodiunsplash.jpg",
+  "image/pexels-pixabay-164853.jpg",
+  "image/pexelsaaronsvd12544.jpg",
+  "image/pexelspixabay164967.jpg",
+  "image/pixabay159613.jpg",
+  "image/unsplash.jpg"
+];
+let bgIndex = 0;
+
 // ====================== 함수 ======================
 // 곡 로드
 function loadSong(index) {
   audio.src = songs[index].src;
   nowPlaying.textContent = "지금 재생 중인 곡 : " + songs[index].title;
+  
+  // 🎨 배경 이미지 변경 (곡마다 순차적으로)
+  bgIndex = index % bgImages.length;
+  bgImage.src = bgImages[bgIndex];
 }
 
 // 아이콘 전환
@@ -258,19 +276,38 @@ dropZone.addEventListener("drop", (e) => {
 
 // ====================== 비주얼라이저 ======================
 function draw() {
-  const bgImage = new Image();
-  bgImage.src = "image/unsplash.jpg";
-
   requestAnimationFrame(draw);
   analyser.getByteFrequencyData(dataArray);
 
+  // 배경 이미지 로드 완료 시만 그리기
   if (bgImage.complete) {
-    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    // 비율 유지하면서 캔버스에 꽉 차게
+    const aspectRatio = bgImage.width / bgImage.height;
+    const canvasRatio = canvas.width / canvas.height;
+
+    let drawWidth, drawHeight, offsetX, offsetY;
+
+    if (aspectRatio > canvasRatio) {
+      // 이미지가 더 넓음 → 높이에 맞추고 좌우 잘림
+      drawHeight = canvas.height;
+      drawWidth = bgImage.width * (canvas.height / bgImage.height);
+      offsetX = (canvas.width - drawWidth) / 2;
+      offsetY = 0;
+    } else {
+      // 이미지가 더 높음 → 너비에 맞추고 상하 잘림
+      drawWidth = canvas.width;
+      drawHeight = bgImage.height * (canvas.width / bgImage.width);
+      offsetX = 0;
+      offsetY = (canvas.height - drawHeight) / 2;
+    }
+
+    ctx.drawImage(bgImage, offsetX, offsetY, drawWidth, drawHeight);
   } else {
     ctx.fillStyle = "#111";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
+  // 바(Visualizer)
   const barWidth = (canvas.width / bufferLength) * 2.5;
   let x = 0;
 
@@ -281,8 +318,8 @@ function draw() {
     x += barWidth + 1;
   }
 }
-draw();
 
 // ====================== 초기화 ======================
 loadSong(currentIndex);
 updateVolumeSlider();
+draw();
