@@ -40,32 +40,37 @@
       fill: currentColor;
     }
 
-    /* 🔊 볼륨 슬라이더 */
-    #volumeControl {
-      -webkit-appearance: none;
-      width: 200px;
-      height: 4px;
-      border-radius: 2px;
-      background: var(--bs-border-color);
-      outline: none;
-      transition: background 0.3s;
-    }
-    #volumeControl::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--bs-primary);
-      cursor: pointer;
-    }
-    #volumeControl::-moz-range-thumb {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--bs-primary);
-      cursor: pointer;
-    }
+  /* 🔊 볼륨 슬라이더 */
+  #volumeControl {
+    -webkit-appearance: none;
+    width: 200px;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, gold 100%, #ccc 100%);
+    outline: none;
+  }
+
+  /* 크롬/엣지/사파리 */
+  #volumeControl::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 24px;           /* ⬅ 직사각형 */
+    border-radius: 3px;     /* ⬅ 모서리 살짝 둥글게 */
+    background: #fff;
+    border: 2px solid #999;
+    cursor: pointer;
+  }
+
+  /* 파이어폭스 */
+  #volumeControl::-moz-range-thumb {
+    width: 14px;
+    height: 24px;
+    border-radius: 3px;
+    background: #fff;
+    border: 2px solid #999;
+    cursor: pointer;
+  }
   </style>
 </head>
 <body>
@@ -127,8 +132,9 @@
 
     <!-- 🔊 볼륨 컨트롤 -->
     <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
-      <label for="volumeControl" class="form-label mb-0 small">🔊 볼륨</label>
+      <label for="volumeControl" class="form-label mb-0 small">볼륨</label>
       <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="1">
+      <span id="volumeValue" class="small fw-semibold">100</span>
     </div>
 
     <p id="nowPlaying" class="fw-semibold"></p>
