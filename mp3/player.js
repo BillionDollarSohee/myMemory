@@ -2,11 +2,30 @@
 // 연도 표기
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// navbar.html 불러오기
+// navbar.html 불러오기 (교체)
 fetch("navBar.html")
   .then(res => res.text())
   .then(data => {
     document.getElementById("navbar-placeholder").innerHTML = data;
+
+    // ✅ 야간모드 토글은 여기서!
+    const themeToggle = document.getElementById('themeToggle');
+    const docEl = document.documentElement;
+    const THEME_KEY = 'onepage-theme';
+
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if (savedTheme) {
+      docEl.setAttribute('data-bs-theme', savedTheme);
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const cur = docEl.getAttribute('data-bs-theme') || 'light';
+        const next = cur === 'light' ? 'dark' : 'light';
+        docEl.setAttribute('data-bs-theme', next);
+        localStorage.setItem(THEME_KEY, next);
+      });
+    }
   });
 
 // === 브라우저 기본 드롭 동작 막기 ===
@@ -75,7 +94,6 @@ let isRepeat = false;
 let currentImage = null;
 let targetImage = null;
 let fadeAlpha = 0;
-let fadeSpeed = 0.05;       // 크로스페이드 속도 (0.01 ~ 0.1 사이 추천)
 
 // ====================== 배경 이미지별 색상 매핑 ======================
 let currentBgIndex = 0; // 현재 배경 이미지 인덱스
@@ -119,22 +137,43 @@ const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
 // ====================== 보조 함수 ======================
-function hexToRgb(hex) {
-  hex = hex.replace("#", "");
-  const bigint = parseInt(hex, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return [r, g, b];
+function parseHexColor(hex) {
+  hex = hex.replace('#','').trim();
+  if (hex.length === 3) {
+    // #RGB
+    const r = parseInt(hex[0]+hex[0], 16);
+    const g = parseInt(hex[1]+hex[1], 16);
+    const b = parseInt(hex[2]+hex[2], 16);
+    return [r,g,b,1];
+  } else if (hex.length === 4) {
+    // #RGBA
+    const r = parseInt(hex[0]+hex[0], 16);
+    const g = parseInt(hex[1]+hex[1], 16);
+    const b = parseInt(hex[2]+hex[2], 16);
+    const a = parseInt(hex[3]+hex[3], 16) / 255;
+    return [r,g,b,a];
+  } else if (hex.length === 6) {
+    // #RRGGBB
+    const r = parseInt(hex.slice(0,2), 16);
+    const g = parseInt(hex.slice(2,4), 16);
+    const b = parseInt(hex.slice(4,6), 16);
+    return [r,g,b,1];
+  } else if (hex.length === 8) {
+    // #RRGGBBAA
+    const r = parseInt(hex.slice(0,2), 16);
+    const g = parseInt(hex.slice(2,4), 16);
+    const b = parseInt(hex.slice(4,6), 16);
+    const a = parseInt(hex.slice(6,8), 16) / 255;
+    return [r,g,b,a];
+  }
+  return [255,255,255,1]; // fallback
 }
 
-function lerp(a, b, t) {
-  return a + (b - a) * t;
-}
+function lerp(a, b, t) { return a + (b - a) * t; }
 
 // ====================== 상태 변수 보강 ======================
-let prevBarColor = barColor;
-let targetBarColor = barColor;
+let prevBarColor = "#ffffff";
+let targetBarColor = "#ffffff";
 
 // ====================== 함수 ======================
 // 곡 로드
@@ -152,13 +191,12 @@ function loadSong(index) {
 
     // 새로운 색상 목표값 설정
     const imgSrc = bgImages[currentBgIndex].split("?")[0];
-    prevBarColor = barColor;
-    targetBarColor = imageColors[imgSrc] || "#91919180";
+    prevBarColor = targetBarColor; // ✅ 이전 색상 저장
+    targetBarColor = imageColors[imgSrc] || "#91919180"; // ✅ 새로운 목표 색상
 
     if (!currentImage) {
       currentImage = img;
-      // 매핑된 색상으로 교체
-      barColor = targetBarColor;
+      barColor = targetBarColor; // 초기 로드 시만 즉시 적용
     }
   };
 }
@@ -330,12 +368,27 @@ dropZone.addEventListener("drop", (e) => {
 });
 
 // ====================== 비주얼라이저 ======================
+// 🎨 HEX → RGB 변환
+function hexToRgb(hex) {
+  hex = hex.replace("#", "");
+  const bigint = parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return [r, g, b];
+}
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+// ====================== draw ======================
 function draw() {
   requestAnimationFrame(draw);
   analyser.getByteFrequencyData(dataArray);
 
-  // 현재 배경 그리기
+  // 배경 그리기
   if (currentImage) {
+    fadeAlpha += 0.02;
     ctx.globalAlpha = 1;
     ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
   } else {
@@ -343,45 +396,42 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-    // 페이드 효과
-    if (targetImage) {
-    fadeAlpha += 0.02;
+  // 배경 페이드 + 색상 전환
+  if (targetImage) {
     if (fadeAlpha >= 1) {
-        fadeAlpha = 1;
-        currentImage = targetImage;
-        targetImage = null;
-
-        // ✅ 배경 이미지 경로 기준으로 색상 지정
-        const imgSrc = bgImages[currentBgIndex];
-        barColor = imageColors[imgSrc] || "#fff"; 
+      fadeAlpha = 1;
+      currentImage = targetImage;
+      targetImage = null;
+      prevBarColor = targetBarColor; // 페이드 종료 → 현재 색상 확정
     }
     ctx.globalAlpha = fadeAlpha;
     ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = 1;
-    }
+  }
 
-    // EQ 막대
-    const barWidth = (canvas.width / bufferLength) * 1.5;
-    let x = 0;
+  // 🎨 막대 색상 보간
+  const [r1,g1,b1,a1] = parseHexColor(prevBarColor);
+    const [r2,g2,b2,a2] = parseHexColor(targetBarColor);
+    const r = Math.round(lerp(r1, r2, fadeAlpha));
+    const g = Math.round(lerp(g1, g2, fadeAlpha));
+    const b = Math.round(lerp(b1, b2, fadeAlpha));
+    const a = lerp(a1, a2, fadeAlpha);
+    const currentBarColor = `rgba(${r},${g},${b},${a})`;
 
-    // 현재 배경 이미지 확인
-    let imgSrc = bgImages[currentBgIndex] || "";
-    // 혹시 전체 경로나 캐시 파라미터(#, ?)가 붙으면 파일명만 추출
-    imgSrc = imgSrc.split("?")[0]; 
-    // 매핑된 색상 (없으면 기본 흰색)
-    const currentBarColor = imageColors[imgSrc] || "#fff";
-
-    for (let i = 0; i < bufferLength; i++) {
+  // EQ 막대
+  const barWidth = (canvas.width / bufferLength) * 1.5;
+  let x = 0;
+  for (let i = 0; i < bufferLength; i++) {
     const barHeight = dataArray[i];
     ctx.fillStyle = currentBarColor;
     ctx.fillRect(
-        x,
-        canvas.height - barHeight / 2,
-        barWidth,
-        barHeight / 2
+      x,
+      canvas.height - barHeight / 2,
+      barWidth,
+      barHeight / 2
     );
     x += barWidth + 1;
-    }
+  }
 }
 
 // ====================== 초기화 ======================

@@ -110,6 +110,34 @@
 <!-- nav bar -->
 <div id="navbar-placeholder"></div>
 
+<script>
+  // navBar.html 불러오기
+  fetch("navBar.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("navbar-placeholder").innerHTML = data;
+
+      // navBar.html 로드 후에 themeToggle 이벤트 연결
+      const themeToggle = document.getElementById("themeToggle");
+      const docEl = document.documentElement;
+      const THEME_KEY = "onepage-theme";
+
+      const savedTheme = localStorage.getItem(THEME_KEY);
+      if (savedTheme) {
+        docEl.setAttribute("data-bs-theme", savedTheme);
+      }
+
+      if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+          const cur = docEl.getAttribute("data-bs-theme") || "light";
+          const next = cur === "light" ? "dark" : "light";
+          docEl.setAttribute("data-bs-theme", next);
+          localStorage.setItem(THEME_KEY, next);
+        });
+      }
+    });
+</script>
+
 <!-- Hero -->
 <header class="hero">
   <div class="inner text-center">
