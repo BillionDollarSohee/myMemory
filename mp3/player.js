@@ -9,6 +9,10 @@ fetch("navBar.html")
     document.getElementById("navbar-placeholder").innerHTML = data;
   });
 
+// === 브라우저 기본 드롭 동작 막기 ===
+document.addEventListener("dragover", (e) => e.preventDefault());
+document.addEventListener("drop", (e) => e.preventDefault());
+
 // ====================== 곡 목록 ======================
 const songs = [
   { title: "31km", src: "music/31km.mp3" },
@@ -69,6 +73,9 @@ const volumeControl = document.getElementById("volumeControl");
 const volumeValue = document.getElementById("volumeValue");
 const shuffleBtn = document.getElementById("shuffleBtn");
 const repeatBtn = document.getElementById("repeatBtn");
+// 드래그 앤 드롭
+const dropZone = document.getElementById("dropZone");
+const myPlaylist = document.getElementById("myPlaylist");
 
 // ====================== 오디오 비주얼라이저 ======================
 const canvas = document.getElementById("visualizer");
@@ -193,6 +200,61 @@ volumeControl.addEventListener("input", (e) => {
   audio.volume = parseFloat(e.target.value);
   updateVolumeSlider();
 });
+
+
+// ====================== 드래그 앤 드롭 ======================
+dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropZone.classList.add("dragover");
+});
+
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("dragover");
+});
+
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+
+  const files = e.dataTransfer.files;
+  Array.from(files).forEach((file) => {
+    if (file.type === "audio/mp3" || file.name.endsWith(".mp3")) {
+      const url = URL.createObjectURL(file);
+      const title = file.name.replace(".mp3", "");
+
+      const newSong = { title, src: url };
+      songs.push(newSong);
+
+      // 🔽 하단 리스트에 표시
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+      li.textContent = title;
+
+      const playBtn = document.createElement("button");
+      playBtn.textContent = "▶";
+      playBtn.className = "btn btn-sm btn-outline-primary";
+      playBtn.addEventListener("click", () => {
+        currentIndex = songs.indexOf(newSong);
+        loadSong(currentIndex);
+        audio.play();
+        isPlaying = true;
+        setPlayIcon(true);
+      });
+
+      li.appendChild(playBtn);
+      myPlaylist.appendChild(li);
+
+      // 드롭한 첫 곡 자동 재생
+      currentIndex = songs.length - 1;
+      loadSong(currentIndex);
+      audio.play();
+      isPlaying = true;
+      setPlayIcon(true);
+    }
+  });
+});
+
+
 
 // ====================== 비주얼라이저 ======================
 function draw() {
