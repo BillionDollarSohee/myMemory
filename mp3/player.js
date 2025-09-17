@@ -108,14 +108,6 @@ function getRandomIndex() {
   return randomIndex;
 }
 
-// 볼륨 슬라이더 UI
-function updateVolumeSlider() {
-  const value = volumeControl.value;
-  const percent = (value - volumeControl.min) / (volumeControl.max - volumeControl.min) * 100;
-  volumeControl.style.background = `linear-gradient(to right, gold ${percent}%, #ccc ${percent}%)`;
-  volumeValue.textContent = Math.round(value * 100);
-}
-
 // ====================== 이벤트 리스너 ======================
 // ▶ / ⏸
 playPauseBtn.addEventListener("click", async () => {
@@ -179,8 +171,26 @@ audio.addEventListener("ended", () => {
 });
 
 // 🔊 볼륨 컨트롤
+function updateVolumeSlider() {
+  const value = parseFloat(volumeControl.value);
+  const percent = (value - volumeControl.min) / (volumeControl.max - volumeControl.min) * 100;
+
+  // 차분한 핑크 계열
+  const startColor = "#f7aac9"; // 연한 핑크
+  const endColor   = "#d94f8c"; // 차분한 진핑크
+
+  // 채워진 부분만 색상, 나머지는 투명
+  volumeControl.style.background = `linear-gradient(to right, 
+    ${startColor} 0%, 
+    ${endColor} ${percent}%, 
+    transparent ${percent}%, 
+    transparent 100%)`;
+
+  volumeValue.textContent = Math.round(value * 100);
+}
+
 volumeControl.addEventListener("input", (e) => {
-  audio.volume = e.target.value;
+  audio.volume = parseFloat(e.target.value);
   updateVolumeSlider();
 });
 

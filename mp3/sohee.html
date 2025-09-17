@@ -40,9 +40,9 @@
 
     /* 활성화 상태 (네온) */
     .control-btn.active {
-      color: #40e0ff; /* 조금 연한 블루 */
-      text-shadow: 0 0 3px #1381ff,
-                   0 0 6px #12bbfd;
+      color: #1e90ff; /* 버튼 자체 색 */
+      text-shadow: 0 0 2px #1e90ff,
+                   0 0 6px rgba(30, 144, 255, 0.6);
     }
 
   /* 테두리 제거 */  
@@ -51,29 +51,48 @@
     box-shadow: none;
   }
 
-  /* 🔊 볼륨 슬라이더 */
+  /* 공통 슬라이더 스타일 */
   #volumeControl {
     -webkit-appearance: none;
     width: 200px;
     height: 6px;
     border-radius: 3px;
-    background: linear-gradient(to right, gold 100%, #ccc 100%);
+    background: #fff; /* 기본은 흰색 (안 채워진 부분) */
     outline: none;
   }
 
-  /* 크롬/엣지/사파리 */
+  /* 채워진 부분 (크롬/사파리/엣지) */
+  #volumeControl::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, #f7aac9, #d94f8c) no-repeat;
+  }
+
+  /* Firefox */
+  #volumeControl::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: #fff;
+  }
+  #volumeControl::-moz-range-progress {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, #f7aac9, #d94f8c);
+  }
+
+  /* 손잡이 스타일 */
   #volumeControl::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 14px;
-    height: 24px;           /* ⬅ 직사각형 */
-    border-radius: 3px;     /* ⬅ 모서리 살짝 둥글게 */
+    height: 24px;
+    border-radius: 3px;
     background: #fff;
     border: 2px solid #999;
     cursor: pointer;
+    position: relative;
+    margin-top: -9px; /* track 중앙 정렬 */
   }
-
-  /* 파이어폭스 */
   #volumeControl::-moz-range-thumb {
     width: 14px;
     height: 24px;
@@ -82,6 +101,7 @@
     border: 2px solid #999;
     cursor: pointer;
   }
+
   </style>
 </head>
 <body>
